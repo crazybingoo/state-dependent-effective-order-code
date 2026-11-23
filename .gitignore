@@ -13,6 +13,11 @@ outputs/
 private/
 archive/
 *.csv
+!results/seeg_paired_orders.csv
+!results/seeg_candidate_curves.csv
+!results/seeg_order_summary.csv
+!results/seeg_paired_summary.csv
+!results/seeg_participant_summary.csv
 *.tsv
 *.json
 *.jsonl

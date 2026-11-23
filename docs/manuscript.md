@@ -18,4 +18,4 @@ The accompanying manuscript is **Effective order and dynamical reduction in hype
 
 ## Examples and tests
 
-`methods/demo.py` creates all inputs in memory. `tests/test_principles.py` checks the mathematical implementations using analytical examples and quadrature. No clinical input, clinical output, or clinical pipeline cache is included. The repository documents reusable components rather than claiming end-to-end reproduction of the clinical study.
+`methods/demo.py` creates all inputs in memory. `tests/test_principles.py` checks the mathematical implementations using analytical examples and quadrature. Selected empirical statistics are distributed separately under `results/`; their coverage is documented in [the result guide](results.md). No clinical input or clinical pipeline cache is included. The repository documents reusable components and reported outcomes rather than claiming end-to-end reproduction of the clinical study.

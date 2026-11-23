@@ -23,6 +23,26 @@ class ReleasePolicy(unittest.TestCase):
     def test_unapproved_data_path_rejected(self):
         self.assertIn('path outside reviewed allowlist', guard.validate_blob('observations.csv', b'x,y\n'))
 
+    def test_reviewed_pseudonymous_result_allowed(self):
+        columns = guard.RESULT_SCHEMAS['results/seeg_candidate_curves.csv'].replace(' ', ',')
+        row = ','.join(['S' + '99', 'P' + '99', '1', 'low', '2', 'True', '0.01', '90'])
+        self.assertEqual(guard.validate_blob('results/seeg_candidate_curves.csv', (columns + '\n' + row + '\n').encode()), [])
+
+    def test_result_rejects_identity_and_extra_fields(self):
+        path = 'results/seeg_candidate_curves.csv'
+        columns = guard.RESULT_SCHEMAS[path].replace(' ', ',')
+        row = ','.join(['S' + '99', 'P' + '99', '1', 'low', '2', 'True', '0.01', '90'])
+        invalid = row.replace('P' + '99', 'a-person-name')
+        self.assertIn('unapproved result value', guard.validate_blob(path, (columns + '\n' + invalid).encode()))
+        self.assertIn('unapproved result schema', guard.validate_blob(path, (columns + ',extra\n' + row + ',value').encode()))
+
+    def test_result_rejects_signal_arrays_and_nonfinite_values(self):
+        path = 'results/seeg_candidate_curves.csv'
+        columns = guard.RESULT_SCHEMAS[path].replace(' ', ',')
+        for value in ('NaN', 'inf', 'a sequence of signal samples', '=1+1'):
+            row = ','.join(['S' + '99', 'P' + '99', '1', 'low', '2', 'True', value, '90'])
+            self.assertTrue(guard.validate_blob(path, (columns + '\n' + row).encode()))
+
     def test_archive_disguised_as_source_rejected(self):
         issues = guard.validate_blob('methods/demo.py', b'PK\x03\x04payload')
         self.assertIn('binary or archive payload', issues)
